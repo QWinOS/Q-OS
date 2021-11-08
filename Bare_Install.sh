@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # confirm you can access the internet
 if [[ ! $(curl -Is http://www.google.com/ | head -n 1) =~ "200 OK" ]]; then
@@ -31,8 +31,11 @@ mkdir -p /mnt/{boot,home}
 mount -o noatime,compress=zstd,space_cache=v2,subvol=@home /dev/sda2 /mnt/home
 mount /dev/sda1 /mnt/boot
 
+grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 15/;s/^#Color$/Color/" /etc/pacman.conf
+
 # install base packages (take a coffee break if you have slow internet)
-pacstrap /mnt base base-devel linux linux-firmware linux-headers reflector sudo git vim btrfs-progs grub grub-btrfs efibootmgr networkmanager network-manager-applet --noconfirm --needed # amd-ucode
+pacstrap /mnt base base-devel linux linux-firmware linux-headers reflector sudo git vim btrfs-progs grub grub-btrfs efibootmgr networkmanager network-manager-applet dialog xdg-user-dirs --noconfirm --needed
 genfstab -U /mnt >>/mnt/etc/fstab
 
 cp -r /root/Q-OS /mnt/root/
