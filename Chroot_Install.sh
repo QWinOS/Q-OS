@@ -15,6 +15,7 @@ addrootuserpass() {
     echo root:$pas1 | chpasswd
     unset pas1 pas2
 }
+
 # Update reflector list
 iso=$(curl -4 ifconfig.co/country-iso)
 reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
@@ -32,6 +33,7 @@ echo "127.0.1.1 qwinos.localdomain qwinos" >>/etc/hosts
 # Add root user's password
 getrootpass || error "Root user error"
 addrootuserpass || error "Root user password error"
+clear
 
 # Determine processor type and install microcode
 proc_type=$(lscpu | awk '/Vendor ID:/ {print $3}')
@@ -71,9 +73,9 @@ grub-mkconfig -o /boot/grub/grub.cfg
 curl https://raw.githubusercontent.com/QWinOS/Q-Script/master/Q-Script.sh --output /tmp/Q-Script.sh
 chmod +x /tmp/Q-Script.sh
 /tmp/./Q-Script.sh
-# rm /tmp/Q-Script.sh
 
 # Create the directories Desktop, Documents, Downloads, Music, Pictures, Public, Templates, Videos
 xdg-user-dirs-update
+
 # Enable Network Manager
 systemctl enable NetworkManager
