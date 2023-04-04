@@ -16,6 +16,10 @@ addrootuserpass() {
     unset pas1 pas2
 }
 
+# Update time zone
+ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+hwclock --systohc
+
 # Update reflector list
 # iso=$(curl -4 ifconfig.co/country-iso)
 # reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
@@ -34,17 +38,18 @@ echo "127.0.1.1 artix.localdomain artix" >>/etc/hosts
 getrootpass || error "Root user error"
 addrootuserpass || error "Root user password error"
 clear
+pacman -Rncs dialog --noconfirm
 
 # Determine processor type and install microcode
 proc_type=$(lscpu | awk '/Vendor ID:/ {print $3}')
 case "$proc_type" in
 GenuineIntel)
-    print "Installing Intel microcode"
+    echo "Installing Intel microcode"
     pacman -S --noconfirm intel-ucode
     proc_ucode=intel-ucode.img
     ;;
 AuthenticAMD)
-    print "Installing AMD microcode"
+    echo "Installing AMD microcode"
     pacman -S --noconfirm amd-ucode
     proc_ucode=amd-ucode.img
     ;;
@@ -69,6 +74,10 @@ fi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
+# Adding btrfs filesystem into mkinitcpio
+sed -i "s/^MODULES=()$/MODULES=(btrfs)/" /etc/mkinitcpio.conf
+mkinitcpio -p linux
+
 # Window manager & Other install
 # curl https://raw.githubusercontent.com/QWinOS/Q-Script/master/Q-Script.sh --output /tmp/Q-Script.sh
 # chmod +x /tmp/Q-Script.sh
@@ -77,5 +86,10 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # Create the directories Desktop, Documents, Downloads, Music, Pictures, Public, Templates, Videos
 # xdg-user-dirs-update
 
-# Enable Network Manager
-# systemctl enable NetworkManager
+# Enable System services
+# Connman (Network Manager)
+touch /etc/s6/adminsv/default/contents.d/connmand
+# Openssh-s6
+touch /etc/s6/adminsv/default/contents.d/sshd-srv
+
+s6-db-reload

@@ -19,7 +19,7 @@ fi
 # /boot
 mkfs.fat -F32 /dev/$bootPart
 # /
-mkfs.btrfs /dev/$rootPart
+mkfs.btrfs -f /dev/$rootPart
 
 # set up /mnt
 mount /dev/$rootPart /mnt
@@ -42,7 +42,7 @@ s6-rc -u change ntpd
 pacman -Syy
 
 # install base packages (take a coffee break if you have slow internet)
-basestrap /mnt base base-devel linux linux-firmware linux-headers sudo git vim btrfs-progs grub efibootmgr dialog --noconfirm --needed
+basestrap /mnt base base-devel s6-base elogind-s6 connman-s6 linux linux-firmware linux-headers sudo git vim btrfs-progs grub efibootmgr dialog wpa_supplicant dhcpcd openssh-s6 --noconfirm --needed
 fstabgen -U /mnt >> /mnt/etc/fstab
 
 cp -r /root/Q-OS /mnt/root/
