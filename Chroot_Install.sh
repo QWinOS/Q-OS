@@ -17,18 +17,18 @@ addrootuserpass() {
 }
 
 # Update reflector list
-iso=$(curl -4 ifconfig.co/country-iso)
-reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+# iso=$(curl -4 ifconfig.co/country-iso)
+# reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 pacman -Syy
 
 # Locale-Gen, Hostname setup
 sed -i '/^#en_US.UTF-8* /s/^#//' /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" >>/etc/locale.conf
-echo "QWINOS" >>/etc/hostname
+echo "Artix" >>/etc/hostname
 echo "127.0.0.1 localhost" >>/etc/hosts
 echo "::1       localhost" >>/etc/hosts
-echo "127.0.1.1 qwinos.localdomain qwinos" >>/etc/hosts
+echo "127.0.1.1 artix.localdomain artix" >>/etc/hosts
 
 # Add root user's password
 getrootpass || error "Root user error"
@@ -66,16 +66,16 @@ elif lspci | grep -E "VGA compatible controller"; then
 fi
 
 # Grub Install
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=QWinGRUB
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Window manager & Other install
-curl https://raw.githubusercontent.com/QWinOS/Q-Script/master/Q-Script.sh --output /tmp/Q-Script.sh
-chmod +x /tmp/Q-Script.sh
-/tmp/./Q-Script.sh
+# curl https://raw.githubusercontent.com/QWinOS/Q-Script/master/Q-Script.sh --output /tmp/Q-Script.sh
+# chmod +x /tmp/Q-Script.sh
+# /tmp/./Q-Script.sh
 
 # Create the directories Desktop, Documents, Downloads, Music, Pictures, Public, Templates, Videos
-xdg-user-dirs-update
+# xdg-user-dirs-update
 
 # Enable Network Manager
-systemctl enable NetworkManager
+# systemctl enable NetworkManager
