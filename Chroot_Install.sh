@@ -23,13 +23,15 @@ hwclock --systohc
 # Update reflector list
 # iso=$(curl -4 ifconfig.co/country-iso)
 # reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 15/;s/^#Color$/Color/" /etc/pacman.conf
 pacman -Syy
 
 # Locale-Gen, Hostname setup
 sed -i '/^#en_US.UTF-8* /s/^#//' /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" >>/etc/locale.conf
-echo "Artix" >>/etc/hostname
+echo "artix" >>/etc/hostname
 echo "127.0.0.1 localhost" >>/etc/hosts
 echo "::1       localhost" >>/etc/hosts
 echo "127.0.1.1 artix.localdomain artix" >>/etc/hosts
@@ -87,9 +89,9 @@ mkinitcpio -p linux
 # xdg-user-dirs-update
 
 # Enable System services
-# Connman (Network Manager)
-touch /etc/s6/adminsv/default/contents.d/connmand
+# Connman (Wireless connection Manager)
+s6-service add default connmand
 # Openssh-s6
-touch /etc/s6/adminsv/default/contents.d/sshd-srv
+s6-service add default sshd
 
 s6-db-reload
