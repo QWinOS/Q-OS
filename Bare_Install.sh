@@ -37,6 +37,12 @@ mount /dev/$bootPart /mnt/boot/efi
 grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
 sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 15/;s/^#Color$/Color/" /etc/pacman.conf
 
+# Update reflector list
+iso=$(curl -s ipinfo.io/ | jq ".country")
+pacman -R --noconfirm jq reflector
+reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+pacman -Syy
+
 # install base packages (take a coffee break if you have slow internet)
 pacstrap /mnt base base-devel linux linux-firmware linux-headers reflector sudo git vim btrfs-progs grub grub-btrfs efibootmgr networkmanager network-manager-applet dialog jq --noconfirm --needed
 genfstab -U /mnt >>/mnt/etc/fstab
