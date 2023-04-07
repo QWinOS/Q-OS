@@ -16,6 +16,10 @@ addrootuserpass() {
     unset pas1 pas2
 }
 
+# Enable parallel download in pacman
+grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 15/;s/^#Color$/Color/" /etc/pacman.conf
+
 # Update reflector list
 iso=$(curl -s ipinfo.io/ | jq ".country")
 pacman -R --noconfirm jq
