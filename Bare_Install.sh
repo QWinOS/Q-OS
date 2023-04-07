@@ -55,6 +55,12 @@ addEssentialReposToPacmanConf
 updateMirrorList
 useAllCoreCompilation
 
+# Update reflector list
+iso=$(curl -s ipinfo.io/ | jq ".country")
+pacman -R --noconfirm jq reflector
+reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+pacman -Syy
+
 # install base packages (take a coffee break if you have slow internet)
 case "$(readlink -f /sbin/init)" in
 	*systemd*)
