@@ -15,7 +15,7 @@ read drive
 echo "Should I create boot and root partitions? (ex: yes/y/no/n)"
 read isParted
 isParted=$(echo $isParted | tr '[:upper:]' '[:lower:]')
-if [ $isParted == "yes" || $isParted == "y" ]
+if [ $isParted == "yes" ] || [ $isParted == "y" ]
 then
 	parted -s /dev/$drive mktable gpt
 	parted -s /dev/$drive mkpart "'EFI File System'" fat32 0% 512mparted -s /dev/$drive set 1 esp on
@@ -63,6 +63,10 @@ case "$(readlink -f /sbin/init)" in
 	;;
 	*s6*)
 		basestrap /mnt base base-devel s6-base elogind-s6 connman-s6 linux linux-firmware linux-headers sudo git vim btrfs-progs grub efibootmgr wpa_supplicant dhcpcd openssh-s6 ntp-s6 zsh man-db most dialog jq --noconfirm --needed
+		fstabgen -U /mnt >> /mnt/etc/fstab
+	;;
+	*openrc*)
+		basestrap /mnt base base-devel openrc elogind-openrc connman-openrc linux linux-firmware linux-headers sudo git vim btrfs-progs grub efibootmgr wpa_supplicant dhcpcd openssh-openrc ntp-openrc zsh man-db most dialog jq --noconfirm --needed
 		fstabgen -U /mnt >> /mnt/etc/fstab
 	;;
 esac

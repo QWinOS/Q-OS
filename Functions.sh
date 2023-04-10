@@ -2,8 +2,8 @@
 
 # update mirror list
 updateMirrorList() {
+	pacman -S --noconfirm --needed jq reflector
 	iso=$(curl -s ipinfo.io/ | jq ".country")
-	pacman -R --noconfirm --needed jq reflector
 	reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 	pacman -Syy
 }
@@ -21,15 +21,16 @@ addEssentialReposToPacmanConf() {
             pacman --noconfirm -S archlinux-keyring
             pacman-key --init
         ;;
-        *s6*)
+        *)
             # Adding universe repository if not present
             grep -q "^\[universe\]" /etc/pacman.conf || echo "[universe]
-    Server = https://universe.artixlinux.org/$arch" >>/etc/pacman.conf
+Server = https://universe.artixlinux.org/\$arch" >>/etc/pacman.conf
             pacman --noconfirm --needed -Syy artix-keyring artix-archlinux-support >/dev/null 2>&1
             for repo in extra community multilib; do
                 grep -q "^\[$repo\]" /etc/pacman.conf || echo "[$repo]
-                Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
+Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
             done
+            pacman-key --init
             pacman-key --populate archlinux
         ;;
     esac
