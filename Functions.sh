@@ -2,10 +2,14 @@
 
 # update mirror list
 updateMirrorList() {
-	pacman -S --noconfirm --needed jq reflector
-	iso=$(curl -s ipinfo.io/ | jq ".country")
-	reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
-	pacman -Syy
+    case "$(readlink -f /sbin/init)" in
+        *systemd*)
+        pacman -S --noconfirm --needed jq reflector
+        iso=$(curl -s ipinfo.io/ | jq ".country")
+        reflector -a 24 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+        pacman -Syy
+    ;;
+    esac
 }
 
 # Update pacman.conf for parallel download, add some colors too man!!

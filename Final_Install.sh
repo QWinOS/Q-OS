@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ./Functions.sh
+source ./root/Q-OS/Functions.sh
 
 ### OPTIONS AND VARIABLES ###
 
