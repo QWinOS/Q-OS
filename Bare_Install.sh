@@ -17,6 +17,7 @@ read isParted
 isParted=$(echo $isParted | tr '[:upper:]' '[:lower:]')
 if [ $isParted == "yes" ] || [ $isParted == "y" ]
 then
+	pacman -S --noconfirm --needed parted 
 	parted -s /dev/$drive mktable gpt
 	parted -s /dev/$drive mkpart "'EFI File System'" fat32 0% 512m
 	parted -s /dev/$drive set 1 esp on

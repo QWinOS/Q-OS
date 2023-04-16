@@ -34,6 +34,7 @@ Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
             pacman-key --populate archlinux
         ;;
     esac
+    pacman -Sy --noconfirm
 }
 
 # Use all cores for compilation
