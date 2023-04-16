@@ -1,31 +1,26 @@
 #!/bin/sh
-sh Bare_Install.sh
 
-case "$(readlink -f /sbin/init)" in
-    *systemd*)
-        arch-chroot /mnt ./root/Q-OS/Chroot_Install.sh
-    ;;
-    *)
-        artix-chroot /mnt ./root/Q-OS/Chroot_Install.sh 
-    ;;
-esac
-
-# ./root/Q-OS/Chroot_Install.sh
-echo "Bare Linux installation complete"
-echo "Should I continue installing dotfiles and setup complete linux? (y/n)"
-read choice
-if [ $choice == "y" ]; then
+execute() {
     case "$(readlink -f /sbin/init)" in
     *systemd*)
-        arch-chroot /mnt ./root/Q-OS/Final_Install.sh
+        exec "arch-chroot /mnt ./root/Q-OS/$1_Install.sh"
     ;;
     *)
-        artix-chroot /mnt ./root/Q-OS/Final_Install.sh 
+        exec "artix-chroot /mnt ./root/Q-OS/$1_Install.sh"
     ;;
-esac
+    esac
+}
+
+sh Bare_Install.sh
+
+execute "Chroot"
+
+echo "Bare Linux installation complete"
+echo "Continue installing dotfiles and setup complete linux? (y/n)"
+read choice
+if [ $choice == "y" ]; then
+    execute "Final"
 fi
-    # ./root/Q-OS/Final_Install.sh
-# END
 
 rm -rf /root/Q-OS
 rm -rf /mnt/root/Q-OS
