@@ -18,7 +18,8 @@ isParted=$(echo $isParted | tr '[:upper:]' '[:lower:]')
 if [ $isParted == "yes" ] || [ $isParted == "y" ]
 then
 	parted -s /dev/$drive mktable gpt
-	parted -s /dev/$drive mkpart "'EFI File System'" fat32 0% 512mparted -s /dev/$drive set 1 esp on
+	parted -s /dev/$drive mkpart "'EFI File System'" fat32 0% 512m
+	parted -s /dev/$drive set 1 esp on
 	parted -s /dev/$drive mkpart "'Linux'" btrfs 512m 100%
 	bootPart=$drive"1"
 	rootPart=$drive"2"
@@ -54,12 +55,6 @@ updatePacmanConf
 addEssentialReposToPacmanConf
 updateMirrorList
 useAllCoreCompilation
-
-# Update reflector list
-iso=$(curl -s ipinfo.io/ | jq ".country")
-pacman -R --noconfirm jq reflector
-reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
-pacman -Syy
 
 # install base packages (take a coffee break if you have slow internet)
 case "$(readlink -f /sbin/init)" in

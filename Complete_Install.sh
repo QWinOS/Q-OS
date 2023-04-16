@@ -5,7 +5,7 @@ case "$(readlink -f /sbin/init)" in
     *systemd*)
         arch-chroot /mnt ./root/Q-OS/Chroot_Install.sh
     ;;
-    *s6*)
+    *)
         artix-chroot /mnt ./root/Q-OS/Chroot_Install.sh 
     ;;
 esac
@@ -19,7 +19,7 @@ if [ $choice == "y" ]; then
     *systemd*)
         arch-chroot /mnt ./root/Q-OS/Final_Install.sh
     ;;
-    *s6*)
+    *)
         artix-chroot /mnt ./root/Q-OS/Final_Install.sh 
     ;;
 esac
