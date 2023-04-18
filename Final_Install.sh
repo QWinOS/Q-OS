@@ -33,6 +33,7 @@ choosetheme() {
             repobranch="master"
         ;;
     esac
+    clear
 }
 
 settimedate() {
@@ -290,7 +291,7 @@ if [ $choice != 3 ]; then
 fi
 
 # Install Paru
-installFromAUR paru || error "Failed to install Paru."
+installFromAUR paru-bin || error "Failed to install Paru."
 
 # Install and enable zram
 zramInstallEnable
