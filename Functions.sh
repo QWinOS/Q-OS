@@ -20,6 +20,12 @@ updatePacmanConf() {
 
 # add all essential repositories to pacman.conf
 addEssentialReposToPacmanConf() {
+    # Installing chaotic-aur.
+    pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com >/dev/null 2>&1
+    pacman-key --lsign-key FBA220DFC880C036 >/dev/null 2>&1
+    pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' >/dev/null 2>&1
+    sed -i "/#\ An\ example\ of\ a\ custom\ package\ repository.\  See\ the\ pacman\ manpage\ for/i [chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n" /etc/pacman.conf
+    pacman -Syy
     case "$(readlink -f /sbin/init)" in
         *systemd*)
             pacman --noconfirm -S archlinux-keyring

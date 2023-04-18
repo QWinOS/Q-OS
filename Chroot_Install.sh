@@ -85,13 +85,13 @@ mkinitcpio -p linux
 # Enable Network Manager/Connman, ssh
 case "$(readlink -f /sbin/init)" in
 	*systemd*)
-        	systemctl enable NetworkManager
-	        systemctl enable sshd
+        systemctl enable --now NetworkManager
+	    systemctl enable --now sshd
 	;;
 	*s6*)
 		s6-service add default connmand
-	        s6-service add default sshd
-        	s6-db-reload
+        s6-service add default sshd
+        s6-db-reload
 	;;
 	*openrc*)
 		rc-update add connmand boot

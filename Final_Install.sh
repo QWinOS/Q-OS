@@ -205,6 +205,25 @@ plymouthinstall() {
   mkinitcpio -p linux > /dev/null 2>&1
 }
 
+zramInstallEnable(){ 
+	case "$(readlink -f /sbin/init)" in
+	*systemd*)
+		sudo -u $name paru -S --noconfirm zramd || error "Error in zram installation"
+		systemctl enable --now zramd
+	;;
+	*openrc*)
+		sudo -u $name paru -S --noconfirm zram-openrc || error "Error in zram installation"
+		rc-update add zram boot
+		rc-service zram start
+	;;
+	*s6*)
+		sudo -u $name paru -S --noconfirm zram-s6 || error "Error in zram installation"
+		s6-service add default zram
+		s6-rc -u change zram
+	;;
+	esac
+}
+
 finalize() {
 	dialog --infobox "Preparing welcome message..." 4 50
 	dialog --title "All done!" --msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Enjoy your freshly baked Archlinux" 12 80
@@ -240,19 +259,13 @@ settimedate || error "Error setting time and date."
 # in a fakeroot environment, this is required for all builds with AUR.
 newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
 
-# Installing chaotic-aur.
-pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com >/dev/null 2>&1
-pacman-key --lsign-key FBA220DFC880C036 >/dev/null 2>&1
-pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' >/dev/null 2>&1
-sed -i "/#\ An\ example\ of\ a\ custom\ package\ repository.\  See\ the\ pacman\ manpage\ for/i [chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n" /etc/pacman.conf
-pacman -Syy
 
 useAllCoreCompilation
 
 installFromAUR $name paru-bin || error "Failed to install Paru."
 
-# Install zram
-sudo -u $name paru -S --noconfirm zramd || error "Error in zram installation"
+# Install and enable zram
+zramInstallEnable
 
 # The command that does all the installing. Reads the packages.csv file and
 # installs each needed program the way required. Be sure to run this only after
