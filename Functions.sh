@@ -50,18 +50,6 @@ Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
 # Use all cores for compilation
 useAllCoreCompilation() {
     sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
-}   
-
-installFromAUR() { # args : username package-name-to-install
-	name=$1
-	package=$2
-	sudo -u "$name" git clone --depth 1 "https://aur.archlinux.org/$package.git" ||
-		{
-			cd "$package" || return 1
-			sudo -u "$name" git pull --force origin master
-		}
-	cd "$package"
-	sudo -u "$name" -D "$package" makepkg --noconfirm -si || return 1
 }
 
 # Function to print error

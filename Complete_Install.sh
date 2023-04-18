@@ -2,12 +2,12 @@
 
 execute() {
     case "$(readlink -f /sbin/init)" in
-    *systemd*)
-        arch-chroot /mnt /root/Q-OS/$1_Install.sh
-    ;;
-    *)
-        artix-chroot /mnt /root/Q-OS/$1_Install.sh
-    ;;
+        *systemd*)
+            arch-chroot /mnt /root/Q-OS/$1_Install.sh
+        ;;
+        *)
+            artix-chroot /mnt /root/Q-OS/$1_Install.sh
+        ;;
     esac
 }
 

@@ -47,15 +47,15 @@ useAllCoreCompilation
 # Determine processor type and install microcode
 proc_type=$(lscpu | awk '/Vendor ID:/ {print $3}')
 case "$proc_type" in
-GenuineIntel)
-    echo "Installing Intel microcode"
-    pacman -S --noconfirm intel-ucode
-    proc_ucode=intel-ucode.img
+    GenuineIntel)
+        echo "Installing Intel microcode"
+        pacman -S --noconfirm intel-ucode
+        proc_ucode=intel-ucode.img
     ;;
-AuthenticAMD)
-    echo "Installing AMD microcode"
-    pacman -S --noconfirm amd-ucode
-    proc_ucode=amd-ucode.img
+    AuthenticAMD)
+        echo "Installing AMD microcode"
+        pacman -S --noconfirm amd-ucode
+        proc_ucode=amd-ucode.img
     ;;
 esac
 
@@ -63,14 +63,14 @@ esac
 if lspci | grep -E "NVIDIA|GeForce"; then
     pacman -S nvidia --noconfirm --needed
     nvidia-xconfig
-elif lspci | grep -E "Radeon"; then
+    elif lspci | grep -E "Radeon"; then
     pacman -S xf86-video-amdgpu --noconfirm --needed
-elif lspci | grep -E "Integrated Graphics Controller"; then
+    elif lspci | grep -E "Integrated Graphics Controller"; then
     pacman -S libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils --needed --noconfirm
-elif lspci | grep -E "VMware"; then
+    elif lspci | grep -E "VMware"; then
     pacman -S lib32-vulkan-radeon lib32-vulkan-radeon-mesa --needed --noconfirm
     pacman -S xf86-video-vmware --noconfirm --needed
-elif lspci | grep -E "VGA compatible controller"; then
+    elif lspci | grep -E "VGA compatible controller"; then
     pacman -S xf86-video-vesa --noconfirm --needed
 fi
 
@@ -84,17 +84,17 @@ mkinitcpio -p linux
 
 # Enable Network Manager/Connman, ssh
 case "$(readlink -f /sbin/init)" in
-	*systemd*)
+    *systemd*)
         systemctl enable --now NetworkManager
-	    systemctl enable --now sshd
-	;;
-	*s6*)
-		s6-service add default connmand
+        systemctl enable --now sshd
+    ;;
+    *s6*)
+        s6-service add default connmand
         s6-service add default sshd
         s6-db-reload
-	;;
-	*openrc*)
-		rc-update add connmand boot
-		rc-update add sshd boot
-	;;
+    ;;
+    *openrc*)
+        rc-update add connmand boot
+        rc-update add sshd boot
+    ;;
 esac
