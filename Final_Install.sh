@@ -42,10 +42,13 @@ settimedate() {
 			systemctl enable --now ntpd
 			timedatectl set-ntp true
 		;;
-		*)
+		*s6*)
 			s6-rc -u change ntpd
 			s6-service add default ntpd
 			s6-db-reload
+		;;
+		*openrc*)
+			rc-update add ntpd default\
 		;;
 	esac
 }

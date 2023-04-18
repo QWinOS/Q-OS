@@ -3,10 +3,10 @@
 execute() {
     case "$(readlink -f /sbin/init)" in
     *systemd*)
-        exec "arch-chroot /mnt ./root/Q-OS/$1_Install.sh"
+        arch-chroot /mnt /root/Q-OS/$1_Install.sh
     ;;
     *)
-        exec "artix-chroot /mnt ./root/Q-OS/$1_Install.sh"
+        artix-chroot /mnt /root/Q-OS/$1_Install.sh
     ;;
     esac
 }
