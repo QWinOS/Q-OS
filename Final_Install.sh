@@ -272,7 +272,7 @@ settimedate || error "Error setting time and date."
 
 # Allow user to run sudo without password. Since AUR programs must be installed
 # in a fakeroot environment, this is required for all builds with AUR.
-newperms "%wheel ALL=(ALL) NOPASSWD: ALL"
+newperms "%wheel ALL=(ALL:ALL) NOPASSWD: ALL"
 
 useAllCoreCompilation
 
@@ -334,8 +334,9 @@ fi
 
 # This line, overwriting the `newperms` command above will allow the user to run
 # serveral important commands, `shutdown`, `reboot`, updating, etc. without a password.
-newperms "%wheel ALL=(ALL) ALL #added-by-script
-%wheel ALL=(ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/packer -Syu,/usr/bin/packer -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/paru,/usr/bin/pacman -Syyuw --noconfirm"
+newperms "%wheel ALL=(ALL:ALL) ALL #added-by-script
+$name ALL=(ALL:ALL) ALL
+%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/packer -Syu,/usr/bin/packer -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/paru,/usr/bin/pacman -Syyuw --noconfirm"
 
 # Try installing failed packages if not installed save to file
 #failinstallationloop
