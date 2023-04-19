@@ -40,8 +40,8 @@ settimedate() {
     echo "Final step \nSynchronizing system time to ensure successful and secure installation of software..."
     case "$(readlink -f /sbin/init)" in
         *systemd*)
-            systemctl enable --now ntpd
-            timedatectl set-ntp true
+            systemctl enable ntpd
+            # timedatectl set-ntp true
         ;;
         *s6*)
             s6-rc -u change ntpd
@@ -224,7 +224,7 @@ zramInstallEnable(){
     case "$(readlink -f /sbin/init)" in
         *systemd*)
             sudo -u $name paru -S --noconfirm zramd || error "Error in zram installation"
-            systemctl enable --now zramd
+            systemctl enable zramd
         ;;
         *openrc*)
             sudo -u $name paru -S --noconfirm zram-openrc || error "Error in zram installation"
