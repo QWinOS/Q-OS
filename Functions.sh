@@ -28,7 +28,7 @@ addEssentialReposToPacmanConf() {
     # pacman -Syy
     case "$(readlink -f /sbin/init)" in
         *systemd*)
-            pacman --noconfirm -S archlinux-keyring
+            pacman --noconfirm --needed -S archlinux-keyring
             pacman-key --init
         ;;
         *)
