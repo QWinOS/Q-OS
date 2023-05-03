@@ -8,29 +8,55 @@ if [[ ! $(curl -Is http://www.google.com/ | head -n 1) =~ "200 OK" ]]; then
     read
 fi
 
-echo "Enter drive name (ex: sda)"
-read drive
+echo "Encrypted drives are not supported by this installation script. (ex: /dev/mapper/root)"
+echo "Are you sure drives are not encrypted? Press Ctrl-C to abort or enter to continue."
+read
 
-# make 2 partitions on the disk.
-echo "Should I create boot and root partitions? (ex: yes/y/no/n)"
-read isParted
-isParted=$(echo $isParted | tr '[:upper:]' '[:lower:]')
-if [ $isParted == "yes" ] || [ $isParted == "y" ]
+# Ask if installation is to be done in the same drive
+echo "Do you want to install boot and root in same drive? (ex: yes/y/no/n)"
+read isSameDrive
+isSameDrive=$(echo $isSameDrive | tr '[:upper:]' '[:lower:]')
+if [ $isSameDrive == "no" ] || [ $isSameDrive == "n" ]
 then
-    pacman -S --noconfirm --needed parted
-    parted -s /dev/$drive mktable gpt
-    parted -s /dev/$drive mkpart "'EFI File System'" fat32 0% 512m
-    parted -s /dev/$drive set 1 esp on
-    parted -s /dev/$drive mkpart "'Linux'" btrfs 512m 100%
-    bootPart=$drive"1"
-    rootPart=$drive"2"
+    # if not in same drive ask for complete partition names for boot and root
+    echo "Enter boot partition name (ex: sda1 / nmvme0n1p1)"
+    read bootPart
+    echo "Enter root partition name (ex: sda1 / nmvme0n1p1)"
+    read rootPart
 else
-    echo "Enter boot partition number (ex: 1/2/3/...)"
-    read bootPartNum
-    echo "Enter root partition number (ex: 1/2/3/...)"
-    read rootPartNum
-    bootPart=$drive$bootPartNum
-    rootPart=$drive$rootPartNum
+    # if same drive ask for the drive name only
+    echo "Enter drive name (ex: sda / nvme0n1)"
+    read drive
+
+    # append p to drive name and store to exactDrive if drive is a SSD
+    if [ ${drive:0:1} == "n" ]
+    then
+        exactDrive=$drive"p"
+    else
+        exactDrive=$drive
+    fi
+        
+    # make 2 partitions on the disk.
+    echo "Should I create boot and root partitions? (ex: yes/y/no/n)"
+    read isParted
+    isParted=$(echo $isParted | tr '[:upper:]' '[:lower:]')
+    if [ $isParted == "yes" ] || [ $isParted == "y" ]
+    then
+        pacman -S --noconfirm --needed parted
+        parted -s /dev/$drive mktable gpt
+        parted -s /dev/$drive mkpart "'EFI File System'" fat32 0% 512m
+        parted -s /dev/$drive set 1 esp on
+        parted -s /dev/$drive mkpart "'Linux'" btrfs 512m 100%
+        bootPart=$exactDrive"1"
+        rootPart=$exactDrive"2"
+    else
+        echo "Enter boot partition number (ex: 1/2/3/...)"
+        read bootPartNum
+        echo "Enter root partition number (ex: 1/2/3/...)"
+        read rootPartNum
+        bootPart=$exactDrive$bootPartNum
+        rootPart=$exactDrive$rootPartNum
+    fi
 fi
 
 # make filesystems
@@ -47,9 +73,17 @@ btrfs su cr @
 btrfs su cr @home
 cd
 umount /mnt
-mount -o noatime,compress=zstd,space_cache=v2,subvol=@ /dev/$rootPart /mnt
-mkdir -p /mnt/{boot/efi,home}
-mount -o noatime,compress=zstd,space_cache=v2,subvol=@home /dev/$rootPart /mnt/home
+if [ ${drive:0:1} == "n" ]
+then
+    # if root partition is installed in a SSD
+    mount -o noatime,compress=zstd,space_cache=v2,ssd,discard=async,subvol=@ /dev/$rootPart /mnt
+    mkdir -p /mnt/{boot/efi,home}
+    mount -o noatime,compress=zstd,space_cache=v2,ssd,discard=async,subvol=@home /dev/$rootPart /mnt/home
+else
+    mount -o noatime,compress=zstd,space_cache=v2,subvol=@ /dev/$rootPart /mnt
+    mkdir -p /mnt/{boot/efi,home}
+    mount -o noatime,compress=zstd,space_cache=v2,subvol=@home /dev/$rootPart /mnt/home
+fi
 mount /dev/$bootPart /mnt/boot/efi
 
 updatePacmanConf
