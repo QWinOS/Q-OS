@@ -19,9 +19,9 @@ isSameDrive=$(echo $isSameDrive | tr '[:upper:]' '[:lower:]')
 if [ $isSameDrive == "no" ] || [ $isSameDrive == "n" ]
 then
     # if not in same drive ask for complete partition names for boot and root
-    echo "Enter boot partition name (ex: sda1 / nmvme0n1p1)"
+    echo "Enter boot partition name (ex: sda1 / nvme0n1p1)"
     read bootPart
-    echo "Enter root partition name (ex: sda1 / nmvme0n1p1)"
+    echo "Enter root partition name (ex: sda1 / nvme0n1p1)"
     read rootPart
 else
     # if same drive ask for the drive name only
