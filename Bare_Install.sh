@@ -73,7 +73,7 @@ btrfs su cr @
 btrfs su cr @home
 cd
 umount /mnt
-if [ ${drive:0:1} == "n" ]
+if [ ${rootPart:0:1} == "n" ]
 then
     # if root partition is installed in a SSD
     mount -o noatime,compress=zstd,space_cache=v2,ssd,discard=async,subvol=@ /dev/$rootPart /mnt
