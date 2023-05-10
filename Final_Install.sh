@@ -196,6 +196,8 @@ putgitrepo() {
     track="git --git-dir=$1/.cfg/ --work-tree=$1"
     $track checkout -f
     $track config --local status.showUntrackedFiles no
+    # make git ignore deleted LICENSE, packages.csv & README.md files
+    $track update-index --assume-unchanged "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/packages.csv"
 }
 
 systembeepoff() {
@@ -286,8 +288,6 @@ installationloop
 if [ $choice != 3 ]; then
     putgitrepo "/home/$name"
     rm -f "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/packages.csv"
-    # make git ignore deleted LICENSE packages.csv & README.md files
-    git update-index --assume-unchanged "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/packages.csv"
 fi
 
 # Install Paru
