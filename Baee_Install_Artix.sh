@@ -44,7 +44,7 @@ reflector -a 47 -c $iso -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 pacman -Syy
 
 # install base packages (take a coffee break if you have slow internet)
-basestrap /mnt base base-devel linux linux-firmware linux-headers sudo s6 git vim btrfs-progs grub grub-btrfs efibootmgr networkmanager network-manager-applet dialog jq --noconfirm --needed
+basestrap /mnt base base-devel linux linux-firmware linux-headers sudo s6 elogind-s6 git vim btrfs-progs grub grub-btrfs efibootmgr networkmanager-s6 network-manager-applet dialog jq --noconfirm --needed
 fstabgen -U /mnt >>/mnt/etc/fstab
 
 cp -r /home/artix/Q-OS /mnt/root/
